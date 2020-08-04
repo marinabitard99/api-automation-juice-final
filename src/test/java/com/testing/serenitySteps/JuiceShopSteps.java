@@ -4,6 +4,7 @@ import com.testing.requestBodies.BaseRequestBody;
 import cucumber.api.DataTable;
 import io.restassured.response.Response;
 import net.thucydides.core.annotations.Step;
+import org.yecht.Data;
 
 import java.io.IOException;
 import java.util.*;
@@ -15,17 +16,24 @@ import static net.serenitybdd.core.Serenity.setSessionVariable;
 public class JuiceShopSteps extends BaseSteps {
   private final static String _API_USERS_ = "/api/Users/";
   private final static String _REST_USER_LOGIN_ = "/rest/user/login/";
-
+  private final static String _REST_USER_ERASURE_REQ_ = "/rest/user/erasure-request";
+  private final static String _API_BASKET_ITEMS_ = "api/BasketItems";
+  private final static String _REST_BASKET_ = "/rest/basket/";
+  private final static String _API_ADDRESS_ = "/api/Addresss";
+  private final static String _API_DELIVERY_OPTIONS_ = "/api/Deliverys";
+  private final static String _API_CREDIT_CART_ = "/api/Cards/";
+  private final static String _REST_USER_PASSWORD_ = "rest/user/reset-password";
+  private final static String _REST_SECURITY_ANSWER_ = "/rest/user/security-question?email=RANDOM_EMAIL";
   @Step
-  public static void getBasketContent(){
-    sendRequest(GET, "INSERT MISSING ENDPOINT HERE" + sessionVariableCalled("basket_id"));
+  public static void getBasketContent() {
+    sendRequest(GET, _REST_BASKET_ + sessionVariableCalled("basket_id"));
   }
 
   @Step
   public static void addItemToBasket(DataTable dataTable) throws IOException {
     BaseRequestBody requestBody = createBodyCustom(dataTable);
     requestBody.addKey("BasketId", sessionVariableCalled("basket_id").toString());
-    sendRequestWithBodyJson(POST, "INSERT MISSING ENDPOINT HERE", requestBody.getBody());
+    sendRequestWithBodyJson(POST, _API_BASKET_ITEMS_, requestBody.getBody());
   }
 
   @Step
@@ -64,7 +72,7 @@ public class JuiceShopSteps extends BaseSteps {
 
   @Step
   public static void resetPassword(DataTable dataTable) throws IOException {
-    sendRequestWithBodyJson(POST, "INSERT MISSING ENDPOINT HERE", createBody(handleRandomEmail(dataTable)));
+    sendRequestWithBodyJson(POST, _REST_USER_PASSWORD_, createBody(handleRandomEmail(dataTable)));
   }
 
   @Step
@@ -81,6 +89,30 @@ public class JuiceShopSteps extends BaseSteps {
             requestBody.getBody());
   }
 
+  @Step
+  public static void requestErasurePersData(DataTable dataTable) throws IOException {
+    sendRequestWithBodyJson(POST, _REST_USER_ERASURE_REQ_, createBody(dataTable));
+  }
+
+  @Step
+  public static void addsAnAddress(DataTable dataTable) throws IOException {
+    sendRequestWithBodyJson(POST, _API_ADDRESS_, createBody(dataTable));
+  }
+
+@Step
+public static void requestDeliveryOptions() throws IOException {
+  sendRequestWithBodyJson(GET, _API_DELIVERY_OPTIONS_,"{}");
+}
+
+@Step
+public static void addsACreditCart(DataTable dataTable) throws IOException {
+  sendRequestWithBodyJson(POST, _API_CREDIT_CART_,createBody(dataTable));
+}
+
+@Step
+public static void sendSecurityAnswer(DataTable dataTable) throws IOException {
+  sendRequestWithBodyJson(GET, _REST_SECURITY_ANSWER_, createBody(dataTable));
+}
   // Private
 
   private static String createChangePasswordEndpoint(String current, String new_, String repeat){
@@ -98,4 +130,5 @@ public class JuiceShopSteps extends BaseSteps {
     }
     return map;
   }
+
 }
